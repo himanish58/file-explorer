@@ -1,10 +1,12 @@
 export interface FileItem {
+	id: number;
 	type: string;
 	meta: string;
 	name: string;
 }
 
 export interface FolderItem {
+	id: number;
 	type: string;
 	name: string;
 	data: Array<FolderItem | FileItem>;

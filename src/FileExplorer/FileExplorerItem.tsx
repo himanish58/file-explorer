@@ -15,48 +15,58 @@ import {
 
 interface Props {
 	fileExploreItemData: any;
+	selectedFile: null | number;
+	setSelectedFile: any;
+	actionListOpenedFor: null | number;
+	setActionListOpenedFor: any;
 }
 
-const FileExplorerItem: FC<Props> = ({ fileExploreItemData }) => {
+const FileExplorerItem: FC<Props> = ({
+	fileExploreItemData,
+	selectedFile,
+	setSelectedFile,
+	actionListOpenedFor,
+	setActionListOpenedFor,
+}) => {
 	const [isExpanded, setIsExpanded] = useState(false);
-	const [isSelected, setIsSelected] = useState(false);
-	const [showActionMenu, setShowActionMenu] = useState(false);
 
 	const isFolder = useMemo(
 		() => fileExploreItemData.type === 'folder',
 		[fileExploreItemData.type]
 	);
 
-	const clickEventListener = useCallback(() => {
-		setShowActionMenu(false);
-	}, []);
+	const handleOutsideClicks = useCallback(() => {
+		setActionListOpenedFor(null);
+		setSelectedFile(null);
+	}, [setActionListOpenedFor, setSelectedFile]);
 
 	useEffect(() => {
-		document.addEventListener('click', clickEventListener);
+		document.addEventListener('click', handleOutsideClicks);
 
 		return () => {
-			document.removeEventListener('click', clickEventListener);
+			document.removeEventListener('click', handleOutsideClicks);
 		};
-	}, [clickEventListener]);
+	}, [handleOutsideClicks]);
 
 	const handleItemClick = useCallback(
 		(event: { stopPropagation: () => void }) => {
 			event.stopPropagation();
+			setActionListOpenedFor(null);
 			if (isFolder) {
 				setIsExpanded((prev) => !prev);
 			} else {
-				setIsSelected((prev) => !prev);
+				setSelectedFile(fileExploreItemData.id);
 			}
 		},
-		[isFolder]
+		[fileExploreItemData.id, isFolder, setActionListOpenedFor, setSelectedFile]
 	);
 
 	const handleItemRightClick = useCallback(
 		(event: { preventDefault: () => void }) => {
 			event.preventDefault();
-			setShowActionMenu((prev) => !prev);
+			setActionListOpenedFor(fileExploreItemData.id);
 		},
-		[]
+		[fileExploreItemData.id, setActionListOpenedFor]
 	);
 
 	const actionClickHandler = useCallback(
@@ -64,8 +74,19 @@ const FileExplorerItem: FC<Props> = ({ fileExploreItemData }) => {
 			event.stopPropagation();
 			// @ts-ignore
 			console.log(`${event.target.id} ${fileExploreItemData.name}`);
+			setActionListOpenedFor(null);
 		},
-		[fileExploreItemData.name]
+		[fileExploreItemData.name, setActionListOpenedFor]
+	);
+
+	const isSelected = useMemo(
+		() => selectedFile === fileExploreItemData.id,
+		[fileExploreItemData.id, selectedFile]
+	);
+
+	const isActionListOpened = useMemo(
+		() => actionListOpenedFor === fileExploreItemData.id,
+		[actionListOpenedFor, fileExploreItemData.id]
 	);
 
 	return (
@@ -86,7 +107,7 @@ const FileExplorerItem: FC<Props> = ({ fileExploreItemData }) => {
 				<span className={isSelected ? 'selected-file' : ''}>
 					{fileExploreItemData.name}
 				</span>
-				{showActionMenu && (
+				{isActionListOpened && (
 					<ul className="action-menu" onClick={actionClickHandler}>
 						<li className="action-menu-item" id="copy">
 							Copy
@@ -104,7 +125,14 @@ const FileExplorerItem: FC<Props> = ({ fileExploreItemData }) => {
 				<ul className="file-explorer-list">
 					{fileExploreItemData.data.map(
 						(data: any, index: React.Key | null | undefined) => (
-							<FileExplorerItem fileExploreItemData={data} key={index} />
+							<FileExplorerItem
+								key={index}
+								fileExploreItemData={data}
+								selectedFile={selectedFile}
+								setSelectedFile={setSelectedFile}
+								actionListOpenedFor={actionListOpenedFor}
+								setActionListOpenedFor={setActionListOpenedFor}
+							/>
 						)
 					)}
 				</ul>
