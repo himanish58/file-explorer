@@ -6,6 +6,7 @@ import React, {
 	useCallback,
 	useEffect,
 } from 'react';
+import ActionItems from './ActionItems';
 import {
 	FileItem,
 	FolderItem,
@@ -35,6 +36,14 @@ const FileExplorerItem: FC<Props> = ({
 		() => fileExploreItemData.type === 'folder',
 		[fileExploreItemData.type]
 	);
+	const isSelected = useMemo(
+		() => selectedFile === fileExploreItemData.id,
+		[fileExploreItemData.id, selectedFile]
+	);
+	const isActionListOpened = useMemo(
+		() => actionListOpenedFor === fileExploreItemData.id,
+		[actionListOpenedFor, fileExploreItemData.id]
+	);
 
 	const handleOutsideClicks = useCallback(() => {
 		setActionListOpenedFor(null);
@@ -50,7 +59,7 @@ const FileExplorerItem: FC<Props> = ({
 	}, [handleOutsideClicks]);
 
 	const handleItemClick = useCallback(
-		(event: { stopPropagation: () => void }) => {
+		(event: React.MouseEvent<HTMLElement>) => {
 			event.stopPropagation();
 			setActionListOpenedFor(null);
 			if (isFolder) {
@@ -63,7 +72,7 @@ const FileExplorerItem: FC<Props> = ({
 	);
 
 	const handleItemRightClick = useCallback(
-		(event: { preventDefault: () => void }) => {
+		(event: React.MouseEvent<HTMLElement>) => {
 			event.preventDefault();
 			setActionListOpenedFor(fileExploreItemData.id);
 		},
@@ -79,16 +88,6 @@ const FileExplorerItem: FC<Props> = ({
 			setActionListOpenedFor(null);
 		},
 		[fileExploreItemData.name, setActionListOpenedFor]
-	);
-
-	const isSelected = useMemo(
-		() => selectedFile === fileExploreItemData.id,
-		[fileExploreItemData.id, selectedFile]
-	);
-
-	const isActionListOpened = useMemo(
-		() => actionListOpenedFor === fileExploreItemData.id,
-		[actionListOpenedFor, fileExploreItemData.id]
 	);
 
 	return (
@@ -110,21 +109,13 @@ const FileExplorerItem: FC<Props> = ({
 				<span className={isSelected ? 'selected-file' : ''}>
 					{fileExploreItemData.name}
 				</span>
+
 				{isActionListOpened && (
-					<ul className="action-menu" onClick={actionClickHandler}>
-						<li className="action-menu-item" id="copy">
-							Copy
-						</li>
-						<li className="action-menu-item" id="delete">
-							Delete
-						</li>
-						<li className="action-menu-item" id="rename">
-							Rename
-						</li>
-					</ul>
+					<ActionItems actionClickHandler={actionClickHandler} />
 				)}
 			</div>
-			{isFolder && isExpanded && (
+
+			{isExpanded && (
 				<ul className="file-explorer-list">
 					{(fileExploreItemData as FolderItem).data.map(
 						(data: any, index: React.Key | null | undefined) => (
