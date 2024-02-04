@@ -11,14 +11,15 @@ import {
 	FolderItem,
 	FOLDER_IMAGE_SRC,
 	LOGO_MAPPER,
+	Meta,
 } from './constants';
 
 interface Props {
-	fileExploreItemData: any;
+	fileExploreItemData: FileItem | FolderItem;
 	selectedFile: null | number;
-	setSelectedFile: any;
+	setSelectedFile: React.Dispatch<React.SetStateAction<null | number>>;
 	actionListOpenedFor: null | number;
-	setActionListOpenedFor: any;
+	setActionListOpenedFor: React.Dispatch<React.SetStateAction<null | number>>;
 }
 
 const FileExplorerItem: FC<Props> = ({
@@ -72,8 +73,9 @@ const FileExplorerItem: FC<Props> = ({
 	const actionClickHandler = useCallback(
 		(event: React.MouseEvent<HTMLElement>) => {
 			event.stopPropagation();
-			// @ts-ignore
-			console.log(`${event.target.id} ${fileExploreItemData.name}`);
+			console.log(
+				`${(event.target as HTMLElement).id} ${fileExploreItemData.name}`
+			);
 			setActionListOpenedFor(null);
 		},
 		[fileExploreItemData.name, setActionListOpenedFor]
@@ -98,8 +100,9 @@ const FileExplorerItem: FC<Props> = ({
 				{isFolder && <span>{isExpanded ? '▼' : '▶'}</span>}
 				<img
 					src={
-						// @ts-ignore
-						isFolder ? FOLDER_IMAGE_SRC : LOGO_MAPPER[fileExploreItemData.meta]
+						isFolder
+							? FOLDER_IMAGE_SRC
+							: LOGO_MAPPER[(fileExploreItemData as FileItem).meta as Meta]
 					}
 					alt="Folder Icon"
 					className="item-icon"
@@ -123,7 +126,7 @@ const FileExplorerItem: FC<Props> = ({
 			</div>
 			{isFolder && isExpanded && (
 				<ul className="file-explorer-list">
-					{fileExploreItemData.data.map(
+					{(fileExploreItemData as FolderItem).data.map(
 						(data: any, index: React.Key | null | undefined) => (
 							<FileExplorerItem
 								key={index}

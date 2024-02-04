@@ -1,3 +1,11 @@
+export enum Meta {
+	js = 'js',
+	ts = 'ts',
+	html = 'html',
+	img = 'img',
+	svg = 'svg',
+}
+
 export interface FileItem {
 	id: number;
 	type: string;
