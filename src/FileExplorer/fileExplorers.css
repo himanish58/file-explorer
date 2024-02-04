@@ -1,0 +1,45 @@
+.file-explorer-list {
+	list-style-type: none;
+}
+
+.file-explorer-list li {
+	margin: 0.5rem 0;
+}
+
+.item-icon {
+	height: 1.25rem;
+	width: 1.25rem;
+}
+
+.list-content {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.5rem;
+	cursor: pointer;
+	position: relative;
+}
+
+.selected-file {
+	color: blue;
+}
+
+.action-menu {
+	list-style-type: none;
+	position: absolute;
+	background-color: rgb(255, 255, 255);
+	border-radius: 0.25rem;
+	box-shadow: 10px 5px 5px gray;
+	margin: 0;
+	padding: 0;
+	z-index: 1;
+	margin-top: 6rem;
+}
+
+.action-menu-item {
+	margin: 1rem 0;
+	padding: 0.5rem 1rem;
+}
+
+.action-menu-item:hover {
+	background-color: gray;
+}
